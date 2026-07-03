@@ -13,6 +13,8 @@ namespace API.Controllers;
 
 public class AccountController(DataContext context, ITokenService tokenservice) : BaseApiController
 {
+    #region Register
+
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> RegisterUser(RegisterDto registerDto)
     {
@@ -33,17 +35,22 @@ public class AccountController(DataContext context, ITokenService tokenservice) 
 
         await context.SaveChangesAsync();
 
+        Console.WriteLine("Hey you");
+
         return new UserDto
         {
             Username = newUser.Username,
             Token = tokenservice.CreateToken(newUser)
         };
 
+
         #region other return statements
         //return Ok(newUser);
         //return await Task.FromResult(newUser);
         #endregion
     }
+
+    #endregion
 
     #region Login
 
@@ -81,8 +88,7 @@ public class AccountController(DataContext context, ITokenService tokenservice) 
     #endregion
 
 
-
-
+  
 
 
 
