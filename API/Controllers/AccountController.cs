@@ -11,6 +11,8 @@ using System.Text;
 
 namespace API.Controllers;
 
+// Comment this out
+
 public class AccountController(DataContext context, ITokenService tokenservice) : BaseApiController
 {
     #region Register
@@ -18,30 +20,32 @@ public class AccountController(DataContext context, ITokenService tokenservice) 
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> RegisterUser(RegisterDto registerDto)
     {
-        if (await CheckDuplicateUsername(registerDto.Username))
-        {
-            return BadRequest("Username is taken.");
-        }
+        return Ok();
 
-        using var hmac = new HMACSHA512();
-        var newUser = new AppUser
-        {
-            Username = registerDto.Username.ToLower(),
-            PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-            PasswordSalt = hmac.Key
-        };
+        //if (await CheckDuplicateUsername(registerDto.Username))
+        //{
+        //    return BadRequest("Username is taken.");
+        //}
 
-        await context.Users.AddAsync(newUser);
+        //using var hmac = new HMACSHA512();
+        //var newUser = new AppUser
+        //{
+        //    Username = registerDto.Username.ToLower(),
+        //    PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
+        //    PasswordSalt = hmac.Key
+        //};
 
-        await context.SaveChangesAsync();
+        //await context.Users.AddAsync(newUser);
 
-        Console.WriteLine("Hey you");
+        //await context.SaveChangesAsync();
 
-        return new UserDto
-        {
-            Username = newUser.Username,
-            Token = tokenservice.CreateToken(newUser)
-        };
+        //Console.WriteLine("Hey you");
+
+        //return new UserDto
+        //{
+        //    Username = newUser.Username,
+        //    Token = tokenservice.CreateToken(newUser)
+        //};
 
 
         #region other return statements

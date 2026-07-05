@@ -1,5 +1,8 @@
 ﻿using API.Data;
+using API.DTOs;
 using API.Entities;
+using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,34 +10,45 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers;
 
 
-public class UsersController(DataContext context) : BaseApiController
+[Authorize]
+public class UsersController(IUserRepository repo /*, IMapper mapper*/) : BaseApiController
 {
-    [AllowAnonymous]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
     {
-        var users = await context.Users.ToListAsync();
+        var users = await repo.GetMembersAsync();
 
         return Ok(users);
     }
 
 
-    [Authorize]
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<AppUser>> GetUser(int id)
+    public async Task<ActionResult<MemberDto>> GetUser(int id)
     {
-        var user = await context.Users.FindAsync(id);
-        if (user is not null)
-            return Ok(user);
+        var user = await repo.GetMemberByIdAsync(id);
+        if (user is null)
+            return NotFound();
 
-        return NotFound();
+        return user;
+    }
+
+
+    [HttpGet("{username}")]
+    public async Task<ActionResult<MemberDto>> GetUser(string username)
+    {
+        var user = await repo.GetMemberByUsernameAsync(username);
+        if (user is null)
+            return NotFound();
+
+
+        return user;
     }
 
     //public void Visit()
     //{
     //    Console.WriteLine("Peace be uopn Mohammad and his descnedants.");
     //    Console.WriteLine("Hello There");
-    //    Console.WriteLine("What are u Talking about dude?");
+    //    Console.WriteLine("What are u Talkin' about dude?");
     //    Console.WriteLine();
     //}
 

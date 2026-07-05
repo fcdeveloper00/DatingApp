@@ -28,7 +28,7 @@ public class TokenService : ITokenService
           new(ClaimTypes.NameIdentifier,user.Username)
         };
 
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+        SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
