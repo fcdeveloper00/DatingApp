@@ -22,7 +22,7 @@ export class Nav {
       next: _ => {
         // console.log(response);
         this.router.navigateByUrl('/members');
-        let username :string = this.model.username;
+        // let username :string = this.model.username;
         // username = username.replace(this.model.username[0].toString(),this.model.username[0].toString().toUppsercase());
         this.toastr.success(`Welcome ${this.model.username}!`);
       },

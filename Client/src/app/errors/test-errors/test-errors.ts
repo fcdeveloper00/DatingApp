@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-test-errors',
@@ -9,12 +10,12 @@ import { Component, inject } from '@angular/core';
 })
 export class TestErrors {
 
-  baseUrl = 'https://localhost:5700/api/'
+  baseUrl = environment.apiUrl;
   private httpClient = inject(HttpClient);
   validationErrors:string[] = [];
 
   get400Error(){
-    this.httpClient.get(`${this.baseUrl}buggy/bad-request`).subscribe({
+    this.httpClient.get(`${this.baseUrl}/buggy/bad-request`).subscribe({
       next:(response) => console.log(response),
       error: error => console.error(error),
       complete: () => console.log('Request completed.')
@@ -22,7 +23,7 @@ export class TestErrors {
   }
 
   get401Error(){
-    this.httpClient.get(`${this.baseUrl}buggy/auth`).subscribe({
+    this.httpClient.get(`${this.baseUrl}/buggy/auth`).subscribe({
       next:response => console.log(response),
       error:error => console.error(error),
       complete: () => console.log('Request completed.')
@@ -30,7 +31,7 @@ export class TestErrors {
   }
 
    get404Error(){
-    this.httpClient.get(`${this.baseUrl}buggy/not-found`).subscribe({
+    this.httpClient.get(`${this.baseUrl}/buggy/not-found`).subscribe({
       next:response => console.log(response),
       error:error => console.error(error),
       complete: () => console.log('Request completed.')
@@ -38,7 +39,7 @@ export class TestErrors {
   }
 
   get500Error(){
-    this.httpClient.get(`${this.baseUrl}buggy/server-error`).subscribe({
+    this.httpClient.get(`${this.baseUrl}/buggy/server-error`).subscribe({
       next:response => console.log(response),
       error:error => console.error(error),
       complete: () => console.log('Request completed.')
@@ -46,7 +47,7 @@ export class TestErrors {
   }
 
   get400ValidationError(){
-    this.httpClient.post(`${this.baseUrl}account/register`,{}).subscribe({
+    this.httpClient.post(`${this.baseUrl}/account/register`,{}).subscribe({
       next:response => console.log(response),
       error:error => {
         // console.error(error),

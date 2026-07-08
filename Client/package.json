@@ -11,6 +11,7 @@
   "private": true,
   "packageManager": "npm@10.8.2",
   "dependencies": {
+    "@angular/cdk": "^21.2.14",
     "@angular/common": "^21.2.0",
     "@angular/compiler": "^21.2.0",
     "@angular/core": "^21.2.0",
@@ -20,6 +21,7 @@
     "bootstrap": "^5.3.8",
     "bootswatch": "^5.3.8",
     "font-awesome": "^4.7.0",
+    "ng-gallery": "^12.0.0",
     "ngx-bootstrap": "^21.2.0",
     "ngx-toastr": "^20.0.5",
     "rxjs": "~7.8.0",
