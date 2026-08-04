@@ -1,6 +1,29 @@
-@API_HostAddress = https://localhost:5700/api/buggy/server-error
+@API_HostAddress = https://localhost:5700/api
 
-GET {{API_HostAddress}}/weatherforecast/
+GET {{API_HostAddress}}/
 Accept: application/json
 
 ###
+
+POST {{API_HostAddress}}/account/login
+Content-Type:application/json
+
+{
+  "username":"lisa",
+  "password":"Pa$$w0rd"
+}
+
+###
+
+PUT {{API_HostAddress}}/users
+Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJsaXNhIiwibmJmIjoxNzgzNzY2NTExLCJleHAiOjE3ODQzNzEzMTAsImlhdCI6MTc4Mzc2NjUxMX0.dhNINswTsxsj7e4SXzplURQvppLciqyu2txpaN7iQyJRHpyRuH1crARSngEBYHer1bTHndORmd9GYA7W0izUHg
+Content-Type:application/json
+
+{
+  "introduction":"updated-intro",
+  "interests":"updated-interests",
+  "lookingFor":"updated-lookingFor",
+  "country":"updated-country",
+  "city":"updated-citry"
+}
+

@@ -5,10 +5,11 @@ import { Nav } from "./nav/nav";
 import { AccountService } from './_services/account.service';
 import { User } from './_models/user.model';
 import { Home } from "./home/home";
+import { NgxSpinnerComponent } from 'ngx-spinner';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, FormsModule, Nav, Home],
+  imports: [RouterOutlet, FormsModule, Nav, Home,NgxSpinnerComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
@@ -26,7 +27,7 @@ export class App implements OnInit {
     const storageValue = localStorage.getItem('user');
     if(storageValue === null) return;
     const user = JSON.parse(storageValue);
-    this.accountService.currentUser.set(user);
+    this.accountService.setCurrentUser(user);
   }
 
   

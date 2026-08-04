@@ -2,6 +2,7 @@
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -13,39 +14,41 @@ namespace API.Controllers;
 
 // Comment this out
 
-public class AccountController(DataContext context, ITokenService tokenservice) : BaseApiController
+//rgb(6,22,28);
+//rgb(14,89,164);
+public class AccountController(DataContext context, ITokenService tokenservice, IMapper mapper) : BaseApiController
 {
     #region Register
 
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> RegisterUser(RegisterDto registerDto)
     {
-        return Ok();
 
-        //if (await CheckDuplicateUsername(registerDto.Username))
-        //{
-        //    return BadRequest("Username is taken.");
-        //}
+        if (await CheckDuplicateUsername(registerDto.Username))
+        {
+            return BadRequest("Username is taken.");
+        }
 
-        //using var hmac = new HMACSHA512();
-        //var newUser = new AppUser
-        //{
-        //    Username = registerDto.Username.ToLower(),
-        //    PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-        //    PasswordSalt = hmac.Key
-        //};
+        using var hmac = new HMACSHA512();
 
-        //await context.Users.AddAsync(newUser);
+        AppUser newUser = mapper.Map<AppUser>(registerDto);
 
-        //await context.SaveChangesAsync();
+        newUser.Username = registerDto.Username.ToLower();
+        newUser.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
+        newUser.PasswordSalt = hmac.Key;
 
-        //Console.WriteLine("Hey you");
 
-        //return new UserDto
-        //{
-        //    Username = newUser.Username,
-        //    Token = tokenservice.CreateToken(newUser)
-        //};
+        await context.Users.AddAsync(newUser);
+
+        await context.SaveChangesAsync();
+
+        return new UserDto
+        {
+            Username = newUser.Username,
+            Token = tokenservice.CreateToken(newUser),
+            Gender = newUser.Gender,
+            KnownAs = newUser.KnownAs,
+        };
 
 
         #region other return statements
@@ -64,6 +67,7 @@ public class AccountController(DataContext context, ITokenService tokenservice) 
         //byte[] hashedPassword = GetPasswordHash(loginDto.Password);
 
         var fetchedUser = await context.Users
+            .Include(u => u.Photos)
             .FirstOrDefaultAsync(
                 u => u.Username == loginDto.Username.ToLower()
             );
@@ -83,7 +87,10 @@ public class AccountController(DataContext context, ITokenService tokenservice) 
         return new UserDto
         {
             Username = fetchedUser.Username,
-            Token = tokenservice.CreateToken(fetchedUser)
+            Token = tokenservice.CreateToken(fetchedUser),
+            PhotoUrl = fetchedUser.Photos.FirstOrDefault(p => p.IsMain)?.Url,
+            Gender = fetchedUser.Gender,
+            KnownAs = fetchedUser.KnownAs,
         };
     }
 
@@ -92,8 +99,25 @@ public class AccountController(DataContext context, ITokenService tokenservice) 
     #endregion
 
 
-  
 
+    /*
+
+    The float property was introduced to allow web developers to implement layouts involving an image floating inside a column of text,
+    with the text wrapping around the left or right of it. The kind of thing you might get in a newspaper layout.
+
+    But web developers quickly realized that you can float anything, not just images, so the use of float broadened, 
+    for example, to fun layout effects such as drop-caps.
+
+    Floats have commonly been used to create entire website layouts featuring multiple columns of information floated 
+    so they sit alongside one another (the default behavior would be for the columns to sit below one another 
+    in the same order as they appear in the source). There are newer, better layout techniques available. 
+    Using floats in this way should be regarded as a legacy technique.
+
+    In this article we'll just concentrate on the proper uses of floats.
+
+
+
+     */
 
 
 
@@ -108,5 +132,10 @@ public class AccountController(DataContext context, ITokenService tokenservice) 
     }
 
 
+
+}
+
+public struct Nectar
+{
 
 }

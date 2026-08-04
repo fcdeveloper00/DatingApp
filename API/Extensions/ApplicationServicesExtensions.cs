@@ -19,11 +19,18 @@ public static class ApplicationServicesExtensions
         services.AddCors();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IUserRepository,UserRepository>();
+        services.AddScoped<ILikesRepository, LikesRepository>();
+        services.AddScoped<IMessageRepository, MessageRepository>();
+        services.AddScoped<IPhotoService,PhotoService>();
+        services.AddScoped<LogUserActivity>();
         services.AddAutoMapper(cfg =>
         {
             cfg.AddProfile<AutoMapperProfiles>();
             cfg.AddMaps([typeof(AutoMapperProfiles).Assembly]);
         });
+
+        services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
+
 
         return services;
 

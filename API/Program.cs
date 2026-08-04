@@ -62,4 +62,47 @@ app.Run();
 /*record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}*/
+}
+
+*/
+
+//int number1 = 100_000;
+//Console.WriteLine(number1);
+
+
+//ISomeTask<Vehicle> someTask = new SomeTask<BMW>();
+//var output = someTask.DoTask();
+//Console.WriteLine(output.GetType());
+
+//public interface ISomeTask<out T> where T : new()
+//{
+//    T DoTask();
+//}
+
+//public class SomeTask<T> : ISomeTask<T> where T : new()
+//{
+//    public T DoTask()
+//    {
+//        T t = new T();
+//        Console.WriteLine("The Task is performed.");
+//        return t;
+//        //throw new NotImplementedException();
+//    }
+//}
+
+//public class Vehicle
+//{
+
+//}
+
+//public class Car : Vehicle
+//{
+
+//}
+
+//public class BMW : Car
+//{
+
+//}
+
+//public class Truck { }

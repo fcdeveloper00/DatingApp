@@ -1,8 +1,13 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
+import { inject, Injectable, signal } from '@angular/core';
 import { Member } from '../_models/member';
 import { environment } from '../../environments/environment';
 import { AccountService } from './account.service';
+import { of, tap } from 'rxjs';
+import { Photo } from '../_models/photo';
+import { PaginatedResult, Pagination } from '../_models/pagination';
+import { UserParams } from '../_models/userParams';
+import { setPaginationHeader,setPaginatedResult } from './paginationHelper';
 
 @Injectable({
   providedIn: 'root',
@@ -11,18 +16,97 @@ export class MemberService {
   private http = inject(HttpClient);
   baseUrl = environment.apiUrl;
   // private accountService = inject(AccountService);
+  // members = signal<Member[]>([]);
+  paginatedResult = signal<PaginatedResult<Member[]> | null>(null);
+  private accountService = inject(AccountService);
+  user = this.accountService.currentUser();
+  userParams = signal<UserParams>(new UserParams(this.user));
+  memberCache = new Map();
 
-  getMembers() {
-    return this.http.get<Member[]>(`${this.baseUrl}/users`);
+  resetUserParams(){
+    this.userParams.set(new UserParams(this.user));
   }
+  
+  getMembers() {
+    const response = this.memberCache.get(Object.values(this.userParams()).join('-'));
+    if(response) return setPaginatedResult(response,this.paginatedResult);
+    
+  // let params = setPaginationHeader(this.userParams());
+  let params = setPaginationHeader(this.userParams().pageNumber,this.userParams().pageSize);
+    params = params.append('gender',this.userParams().gender)
+    params = params.append('minAge',this.userParams().minAge)
+    params = params.append('maxAge',this.userParams().maxAge)
+    params= params.append('orderBy',this.userParams().orderBy)
+    return this.http.get<Member[]>(`${this.baseUrl}/users`,{observe:'response',params:params}).subscribe({
+      next: (res) => {
+        setPaginatedResult(res,this.paginatedResult);
+        this.memberCache.set(Object.values(this.userParams()).join('-'),res);
+      }
+    });
+  }
+
 
   getMemberById(id: number) {
     return this.http.get<Member>(`${this.baseUrl}/users/${id}`);
   }
 
   getMemberByUsername(username: string) {
+    // const member = this.members().find((m) => m.username === username);
+    // if (member !== undefined) return of(member);
+
+    const member:Member = [...this.memberCache.values()].reduce(
+      (arr,elem) => arr.concat(elem.body),
+      []
+    ).find((m : Member) => m.username === username);
+    console.log(member);
+
+    if(member) return of(member);
+
+    // const member2 = {...this.memberCache.values()};
+    // console.log('----------------------------------------------------');
+    // console.table(member2);
+    // console.log('----------------------------------------------------');
+    // console.log(this.memberCache.values());
+
+
     return this.http.get<Member>(`${this.baseUrl}/users/${username}`);
   }
+
+  updateMember(member: Member) {
+    return this.http.put(`${this.baseUrl}/users`, member).pipe(
+      // tap(() => {
+      //   this.members.update((members) =>
+      //     members.map((m) => (m.username === member.username ? member : m)),
+      //   );
+      // }),
+    );
+  }
+
+setMainPhoto(photo:Photo){
+  return this.http.put(`${this.baseUrl}/users/set-main-photo/${photo.id}`,{}).pipe(
+    // tap(() => {
+    //   this.members.update(members => members.map(m => {
+    //     if(m.photos.includes(photo)){
+    //       m.photoUrl = photo.url
+    //     }
+    //     return m;
+    //   }))
+    // })
+  );
+}
+
+deletePhoto(photo:Photo){
+  return this.http.delete(`${this.baseUrl}/users/delete-photo/${photo.id}`).pipe(
+    // tap(() => {
+    //     this.members.update(members => members.map(m => {
+    //         if(m.photos.find(p=> p.id === photo.id)){
+    //           m.photos = m.photos.filter(p => p.id !== photo.id);
+    //         }
+    //        return m;
+    //     }));
+    // })
+  );
+}
 
   // getHttpRequestHeaders() {
   //   return {

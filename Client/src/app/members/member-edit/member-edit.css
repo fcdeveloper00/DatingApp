@@ -1,0 +1,27 @@
+.img-thumbnail{
+    margin:25px;
+    width:85%;
+    height:85%;
+    border:3px solid rgb(20, 72, 72);
+}
+
+.card{
+    /* border:3px solid orange; */
+}
+
+.card-body{
+    padding:0 25px;
+    /* border:3px solid rgb(27, 34, 69); */
+}
+
+.card-footer{
+    padding:10px 15px;
+    /* background-color:rgb(206, 162, 221); */
+    background-color:#fff;
+    border-top:none;
+}
+
+.edit-inputs{
+    /* border:3px solid blueviolet; */
+    padding:.8em;
+}
