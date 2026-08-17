@@ -9,6 +9,11 @@
                  class="card-img img-thumbnail" 
                 >
                 <div class="card-body">
+                    @if(this.presenceService.onlineUsers()?.includes(member.username)){
+                        <div class="mb-2">
+                            <i class="fa fa-user-circle text-success"> Online now</i>
+                        </div>
+                    }
                     <div>
                         <strong>Location:</strong>
                         <p>{{member.city}}, {{member.country}}</p>
@@ -60,9 +65,9 @@
                 <tab heading="Messages" (selectTab)="onTabActivated($event)">
                     <app-member-messages 
                         [username]="member.username"
-                        [messages]="messages"
-                        (updateMessage)="onUpdateMessages($event)"
-                        >
+                    >
+                        /* [messages]="messages"
+                        (updateMessage)="onUpdateMessages($event)" */
                     </app-member-messages>
                 </tab>
             </tabset>

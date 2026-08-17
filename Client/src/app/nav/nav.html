@@ -14,10 +14,16 @@
         <li class="nav-item">
           <a routerLink="/messages" routerLinkActive="active" class="nav-link">Messages</a>
         </li>
+        <!-- <li class="nav-item" *appHasRoleDirective="['Admin','Moderator']"> -->
+        <li class="nav-item" *appHasRole="['Admin','Moderator']">
+           <a  routerLink="/admin" class="nav-link" routerLinkActive="active">Admin</a>
+        </li>
       }
       <li class="nav-item">
-         <a  routerLink="/errors" class="nav-link" routerLinkActive="active">Test Errors</a></li>
-      </ul>
+         <a  routerLink="/errors" class="nav-link" routerLinkActive="active">Test Errors</a>
+      </li>
+    </ul>
+      
       <!-- router-outlet -->
 
     @if (!this.accountService.currentUser()) {

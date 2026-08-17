@@ -4,9 +4,10 @@ import { AccountService } from '../_services/account.service';
  import {BsDropdownModule}from 'ngx-bootstrap/dropdown'
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { ToastrService } from 'ngx-toastr';
+import { HasRoleDirective } from "../_directives/has-role.directive";
 @Component({
   selector: 'app-nav',
-  imports: [FormsModule, BsDropdownModule, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [FormsModule, BsDropdownModule, RouterLink, RouterLinkActive, RouterOutlet, HasRoleDirective],
   templateUrl: './nav.html',
   styleUrl: './nav.css',
 })
@@ -37,3 +38,27 @@ export class Nav {
     this.router.navigateByUrl('/')
   }
 }
+
+/* import { Directive, inject, Input, OnInit, TemplateRef, ViewContainerRef } from '@angular/core';
+import { AccountService } from '../_services/account.service';
+
+@Directive({
+  selector: '[appHasRole]',
+})
+export class HasRole implements OnInit{
+  @Input() appHasRole:string[] = [];
+  private accountService = inject(AccountService);
+  private viewContainerRef  = inject(ViewContainerRef);
+  private templateRef  = inject(TemplateRef);
+
+  ngOnInit(){
+    if(this.accountService.roles().some(r => this.appHasRole.includes(r))){
+      this.viewContainerRef.createEmbeddedView(this.templateRef);
+    }else{
+      this.viewContainerRef.clear();
+    }
+  }
+
+
+}
+ */

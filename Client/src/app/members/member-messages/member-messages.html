@@ -1,11 +1,11 @@
 <div class="card">
     <div class="card-body">
-        @if(messages().length === 0){
+        @if(this.messageService.messageThread().length === 0){
             <p>No Messages Yet</p>
         }@else {
             <ul class="chat">
                 
-                @for(msg of messages(); track msg.id){
+                @for(msg of this.messageService.messageThread(); track msg.id){
                     <li>
                         <div>
                             <span class="chat-img float-end">

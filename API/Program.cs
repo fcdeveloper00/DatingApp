@@ -1,9 +1,12 @@
 using API.Data;
+using API.Entities;
 using API.Extensions;
 using API.Interfaces;
 using API.Middleware;
 using API.Services;
+using API.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -24,11 +27,12 @@ var app = builder.Build();
 //IEndpointRouteBuilder;
 app.UseMiddleware<ExceptionMiddleware>();
 
-app.UseCors(
-    cfg =>
-           cfg.AllowAnyHeader().
-           AllowAnyMethod().
-           WithOrigins("https://localhost:4200", "http://localhost:4200")
+app.UseCors(cfg =>
+
+    cfg.AllowAnyHeader()
+          .AllowAnyMethod()
+             .AllowCredentials()
+                .WithOrigins("https://localhost:4200", "http://localhost:4200")
 );
 
 app.UseAuthentication();
@@ -36,20 +40,26 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapHub<PresenceHub>("hubs/presence");
+app.MapHub<MessageHub>("hubs/message");
+
 using var scope = app.Services.CreateScope();
 var serviceProvider = scope.ServiceProvider;
 
 try
 {
     var context = serviceProvider.GetRequiredService<DataContext>();
+    var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<AppRole>>();
     await context.Database.MigrateAsync();
-    await Seed.SeedUsers(context);
+    await context.Database.ExecuteSqlRawAsync("DELETE FROM [Connections]");
+    await Seed.SeedUsers(userManager, roleManager);
 
 }
 catch (Exception ex)
 {
     var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
-    logger.LogError(ex,"Error while applying migration to the database");
+    logger.LogError(ex, "Error while applying migration to the database");
 }
 
 app.Run();

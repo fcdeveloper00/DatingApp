@@ -23,14 +23,14 @@ public class MessagesController(IMessageRepository msgRepo, IUserRepository user
         var fetchedSender = await userRepo.GetUserByUsernameAsync(username);
         var fetchedRecipient = await userRepo.GetUserByUsernameAsync(createMessageDto.RecipientUsername.ToLower());
 
-        if (fetchedSender == null || fetchedRecipient is null)
+        if (fetchedSender == null || fetchedRecipient is null || fetchedSender.UserName == null || fetchedRecipient.UserName == null)
             return BadRequest("Cannot find Sender or recipient");
 
         Message newMessage = new()
         {
             Content = createMessageDto.Content,
-            SenderUsername = fetchedSender.Username,
-            RecipientUsername = fetchedRecipient.Username,
+            SenderUsername = fetchedSender.UserName,
+            RecipientUsername = fetchedRecipient.UserName,
             SentAt = DateTime.UtcNow,
             RecipientId = fetchedRecipient.Id,
             SenderId = fetchedSender.Id,

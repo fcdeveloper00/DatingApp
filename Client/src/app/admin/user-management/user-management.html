@@ -1,0 +1,30 @@
+
+<!-- <p>{{users[0].userName}}</p> -->
+
+<!-- 
+@for(user of users; track user.username){
+    <p>{{user.username}}</p>
+} -->
+
+<div class="row">
+    <table class="table">
+        <thead>
+            <tr>
+                <th style="width:30%;">Username</th>
+                <th style="width:40%;">Active roles</th>
+                <th style="width:30%;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- @for (name of usernames; track $index) {
+                <td>{{name}}</td>
+            } -->
+            @for(user of users; track user.userName){
+                <tr>
+                    <td>{{user.userName}}</td>
+                    <td><button class="btn btn-info" (click)="openRolesModal(user)">Edit roles</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

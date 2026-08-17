@@ -2,6 +2,7 @@
 using API.Helpers;
 using API.Interfaces;
 using API.Services;
+using API.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Extensions;
@@ -23,6 +24,7 @@ public static class ApplicationServicesExtensions
         services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddScoped<IPhotoService,PhotoService>();
         services.AddScoped<LogUserActivity>();
+        services.AddSingleton<PresenceTracker>();
         services.AddAutoMapper(cfg =>
         {
             cfg.AddProfile<AutoMapperProfiles>();
@@ -30,7 +32,7 @@ public static class ApplicationServicesExtensions
         });
 
         services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
-
+        services.AddSignalR();
 
         return services;
 

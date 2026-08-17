@@ -29,7 +29,7 @@ public class UserRepository : IUserRepository
     public async Task<MemberDto?> GetMemberByUsernameAsync(string username)
     {
         return await _context.Users
-            .Where(u => u.Username == username)
+            .Where(u => u.UserName == username)
             .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
     }
@@ -38,7 +38,7 @@ public class UserRepository : IUserRepository
     {
         IQueryable<AppUser> query = _context.Users.AsQueryable();
 
-        query = query.Where(u => u.Username != userParams.CurrentUsername);
+        query = query.Where(u => u.UserName != userParams.CurrentUsername);
 
         if (userParams.Gender is not null)
         {
@@ -75,7 +75,7 @@ public class UserRepository : IUserRepository
     {
         var fetchedUser = await _context.Users
             .Include(u => u.Photos)
-            .SingleOrDefaultAsync(u => u.Username == username);
+            .SingleOrDefaultAsync(u => u.UserName == username);
         return fetchedUser;
     }
 

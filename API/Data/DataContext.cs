@@ -1,18 +1,21 @@
 ﻿using API.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
 
-public class DataContext : DbContext
+public class DataContext : IdentityDbContext<AppUser, AppRole,int,
+         IdentityUserClaim<int>, AppUserRole, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
 {
     public DataContext(DbContextOptions options) : base(options)
     {
     }
-    
-    public DbSet<AppUser> Users => Set<AppUser>();
-        
+
     public DbSet<UserLike> Likes => Set<UserLike>();
     public DbSet<Message> Messages => Set<Message>();
+    public DbSet<Group> Groups => Set<Group>();
+    public DbSet<Connection> Connections => Set<Connection>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,11 +24,32 @@ public class DataContext : DbContext
         modelBuilder.Entity<UserLike>()
             .HasKey(
                 userLike => new
-                { 
-                    userLike.SourceUserId, 
-                    userLike.TargetUserId 
+                {
+                    userLike.SourceUserId,
+                    userLike.TargetUserId
                 }
             );
+
+        modelBuilder.Entity<AppUser>()
+            .HasMany(u => u.UserRoles)
+            .WithOne(ur => ur.User)
+            .HasForeignKey(ur => ur.UserId)
+            .IsRequired();
+        /*
+                modelBuilder.Entity<AppUserRole>()
+                    .HasOne(ur => ur.User)
+                    .WithMany(u => u.UserRoles)
+                    .HasForeignKey(ur => ur.UserId);
+        */
+
+        modelBuilder.Entity<AppRole>()
+            .HasMany(r => r.UserRoles)
+            .WithOne(ur => ur.Role)
+            .HasForeignKey(ur => ur.RoleId)
+            .IsRequired();
+
+
+
 
         modelBuilder.Entity<AppUser>()
             .HasMany(u => u.LikedUsers)

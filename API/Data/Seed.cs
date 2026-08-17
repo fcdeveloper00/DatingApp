@@ -1,4 +1,5 @@
 ﻿using API.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
@@ -8,10 +9,10 @@ namespace API.Data;
 
 public class Seed()
 {
-    public async static Task SeedUsers(DataContext context)
+    public async static Task SeedUsers(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
     {
         // Check the database for presence of any data.
-        if (await context.Users.AnyAsync())
+        if (await userManager.Users.AnyAsync())
         {
             return;
         }
@@ -27,19 +28,38 @@ public class Seed()
 
         if (users is null) return;
 
-        foreach (var user in users)
+        var roles = new List<AppRole>()
         {
-            using var hmac = new HMACSHA512();
+            new(){Name = "Admin"},
+            new(){Name = "Moderator"},
+            new(){Name = "Member"}
+        };
 
-            user.Username = user.Username.ToLower();
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("Pa$$w0rd"));
-            user.PasswordSalt = hmac.Key;
-
-            context.Users.Add(user);
+        foreach (var role in roles)
+        {
+            await roleManager.CreateAsync(role);
         }
 
-        await context.SaveChangesAsync();
+        AppUser admin = new()
+        {
+            UserName = "admin",
+            KnownAs = "Admin",
+            City = "",
+            Country = "",
+            Gender = "",
+        };
 
+        await userManager.CreateAsync(admin, "Pa$$w0rd");
+        await userManager.AddToRolesAsync(admin, ["Admin", "Moderator"]);
+
+        foreach (var user in users)
+        {
+            //user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("Pa$$w0rd"));
+            //user.PasswordSalt = hmac.Key;
+            user.UserName = user.UserName!.ToLower();
+            await userManager.CreateAsync(user, "Pa$$w0rd");
+            await userManager.AddToRoleAsync(user, "Member");
+        }
     }
 
 }

@@ -14,17 +14,14 @@ export class MemberMessages {
   @ViewChild('messageForm') messageForm?:NgForm;
   username = input.required<string>();
   messageService = inject(MessageService);
-  messages = input.required<Message[]>();
-  updateMessage = output<Message>();
+  // messages = input.required<Message[]>();
+  // updateMessage = output<Message>();
   messageContent= '';
   
   sendMessage(){
-    this.messageService.sendMessage(this.messageContent,this.username()).subscribe({
-      next: res => {
-        this.messageForm?.reset();
-        this.updateMessage.emit(res);
-      }
-    })
+    this.messageService.sendMessage(this.messageContent,this.username()).then(() => {
+      this.messageForm?.reset();
+    });
   }
 
   

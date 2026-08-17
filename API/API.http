@@ -9,7 +9,7 @@ POST {{API_HostAddress}}/account/login
 Content-Type:application/json
 
 {
-  "username":"lisa",
+  "username":"Lisa",
   "password":"Pa$$w0rd"
 }
 
@@ -27,3 +27,4 @@ Content-Type:application/json
   "city":"updated-citry"
 }
 
+### 

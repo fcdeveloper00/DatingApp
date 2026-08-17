@@ -18,8 +18,9 @@ namespace API.Controllers;
 [Authorize]
 public class UsersController(IUserRepository repo, IMapper mapper/*IPhotoService photoService*/) : BaseApiController
 {
+    //[Authorize(Roles = "Admin")]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams @params)
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery] UserParams @params)
     {
         PagedList<MemberDto> users = await repo.GetMembersAsync(@params);
 
@@ -32,7 +33,7 @@ public class UsersController(IUserRepository repo, IMapper mapper/*IPhotoService
         return Ok(users);
     }
 
-
+    //[Authorize(Roles = "Member")]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<MemberDto>> GetUser(int id)
     {
@@ -178,4 +179,3 @@ public class UsersController(IUserRepository repo, IMapper mapper/*IPhotoService
     }
 
 }
-                                  
