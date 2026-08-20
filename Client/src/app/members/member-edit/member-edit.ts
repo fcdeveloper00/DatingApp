@@ -35,7 +35,8 @@ export class MemberEdit implements OnInit {
   loadMember() {
     const user = this.accountService.currentUser();
     if (!user) return;
-    this.memberService.getMemberByUsername(user.userName).subscribe({
+    console.log(user.username)
+    this.memberService.getMemberByUsername(user.username).subscribe({
       next: (res) => (this.member = res),
       error: (e) => console.log(e),
     });

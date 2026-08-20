@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit, output, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, inject, input, OnInit, output, ViewChild } from '@angular/core';
 import { MessageService } from '../../_services/message.service';
 import { Message } from '../../_models/message.model';
 import { TimeagoModule } from 'ngx-timeago';
@@ -10,8 +10,9 @@ import { FormsModule, NgForm } from "@angular/forms";
   templateUrl: './member-messages.html',
   styleUrl: './member-messages.css',
 })
-export class MemberMessages {
+export class MemberMessages implements AfterViewChecked{
   @ViewChild('messageForm') messageForm?:NgForm;
+  @ViewChild('scrollMe') scrollContainer?:any;
   username = input.required<string>();
   messageService = inject(MessageService);
   // messages = input.required<Message[]>();
@@ -21,11 +22,19 @@ export class MemberMessages {
   sendMessage(){
     this.messageService.sendMessage(this.messageContent,this.username()).then(() => {
       this.messageForm?.reset();
+      this.scrollToBottom();
     });
   }
-
   
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
+  }
   
+  private scrollToBottom(){
+    if(this.scrollContainer){
+      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+    }
+  }
   
   
   // ngOnInit(): void {

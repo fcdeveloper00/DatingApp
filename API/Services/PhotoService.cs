@@ -32,7 +32,6 @@ public class PhotoService : IPhotoService
             uploadResult = await _cloudinary.UploadAsync(uploadParams);
         }
         return uploadResult;
-
     }
 
     public async Task<DeletionResult> DeletePhotoAsync(string publicId)

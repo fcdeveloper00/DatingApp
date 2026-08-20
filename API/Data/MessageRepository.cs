@@ -49,39 +49,47 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
 
     public async Task<IEnumerable<MessageDto>> GetMessageThreadAsync(string currentUsername, string recipientUsername)
     {
-        var messages = await context.Messages
+        var /*messages*/ query = /*await*/ context.Messages
             //.Include(m => m.Sender).ThenInclude(u => u.Photos)
             //.Include(m => m.Recipient).ThenInclude(u => u.Photos)
             .Where(m => m.SenderUsername == currentUsername && m.SenderDeleted == false && m.RecipientUsername == recipientUsername ||
                 m.RecipientUsername == currentUsername && m.RecipientDeleted == false && m.SenderUsername == recipientUsername)
             .OrderBy(m => m.SentAt)
-            .ProjectTo<MessageDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
+            .AsQueryable();
+        //.ProjectTo<MessageDto>(mapper.ConfigurationProvider)
+        //.ToListAsync();
 
-        var unreadMessages = messages.Where(
-            m => m.ReadAt == null && m.RecipientUsername == currentUsername).ToList();
+        //var unreadMessages = messages.Where(
+        var unreadMessages = query.Where(
+            m => m.ReadAt == null && m.RecipientUsername == currentUsername);
+        //m => m.ReadAt == null && m.RecipientUsername == currentUsername).Count();
 
-        if (unreadMessages.Count > 0)
+        //if (unreadMessages .Count > 0)
+        if (unreadMessages is not null)
         {
+            foreach (var message in unreadMessages)
+            {
+                message.ReadAt = DateTime.UtcNow;
+            }
             //unreadMessages.ForEach(m =>
             //{
             //    m.ReadAt = DateTime.UtcNow;
-            //    Console.WriteLine(m.Content);
+            //    //Console.WriteLine(m.Content);
             //});
-
-            await context.Messages.ForEachAsync(m =>
-            {
-                if(m.ReadAt == null && m.RecipientUsername == currentUsername)
-                    m.ReadAt = DateTime.UtcNow;
-            });
-            await context.SaveChangesAsync();
         }
+        //    await context.Messages.ForEachAsync(m =>
+        //    {
+        //        if(m.ReadAt == null && m.RecipientUsername == currentUsername)
+        //            m.ReadAt = DateTime.UtcNow;
+        //    });
+        //await context.SaveChangesAsync();
+        //}
 
-        return messages;
+        return query.ProjectTo<MessageDto>(mapper.ConfigurationProvider).ToList();
     }
 
 
-    public async Task<bool> SaveAllAsync() => await context.SaveChangesAsync() > 0;
+    //public async Task<bool> SaveAllAsync() => await context.SaveChangesAsync() > 0;
 
 
     #region Group-Connection

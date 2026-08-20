@@ -12,8 +12,7 @@ public interface IMessageRepository
     Task<Message?> getMessageAsync(int messageId);
     Task<PagedList<MessageDto>> GetMessagesForUserAsync(MessageParams @params);
     Task<IEnumerable<MessageDto>> GetMessageThreadAsync(string currentUsername,string recipientUsername);
-    Task<bool> SaveAllAsync();
-
+    //Task<bool> SaveAllAsync();
     Task AddGroupAsync(Group group);
     void RemoveConnection (Connection connection);
     Task<Connection?> GetConnectionAsync(string connectionId);

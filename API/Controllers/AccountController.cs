@@ -111,24 +111,11 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
 
     In this article we'll just concentrate on the proper uses of floats.
 
-
-
      */
-
-
-
-    //static byte[] GetPasswordHash(string password)
-    //{
-    //    using var hmac = new HMACSHA512();
-    //    return hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-    //}
     async Task<bool> CheckDuplicateUsername(string username)
     {
         return await userManager.Users.AnyAsync(u => u.NormalizedUserName == username.ToUpper());
     }
-
-
-
 }
 
 public struct Nectar

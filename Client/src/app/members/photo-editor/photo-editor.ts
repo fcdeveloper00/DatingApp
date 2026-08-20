@@ -97,7 +97,6 @@ export class PhotoEditor implements OnInit {
         updatedMember.photoUrl= photo.url;
         this.memberChange.emit(updatedMember);
       }
-      
       this.memberChange.emit(updatedMember);
     };
   }

@@ -1,4 +1,5 @@
-﻿using API.DTOs;
+﻿using API.Data;
+using API.DTOs;
 using API.Entities;
 using API.Extensions;
 using API.Helpers;
@@ -8,7 +9,7 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace API.Controllers;
 
-public class LikesController(ILikesRepository likesRepo) : BaseApiController
+public class LikesController(IUnitOfWork<ILikesRepository> uow) : BaseApiController
 {
     [HttpPost("{targetUserId:int}")]
     public async Task<ActionResult> ToggleLike(int targetUserId)
@@ -17,7 +18,7 @@ public class LikesController(ILikesRepository likesRepo) : BaseApiController
 
         if (currentUserId == targetUserId) return BadRequest("You cannot like yourself!");
 
-        UserLike? existingLike = await likesRepo.GetUserLike(currentUserId, targetUserId);
+        UserLike? existingLike = await uow.Repository.GetUserLike(currentUserId, targetUserId);
 
         if (existingLike is null)
         {
@@ -27,28 +28,28 @@ public class LikesController(ILikesRepository likesRepo) : BaseApiController
                 TargetUserId = targetUserId,
             };
 
-            likesRepo.AddLike(newLike);
+            uow.Repository.AddLike(newLike);
         }
         else
         {
-            likesRepo.DeleteLike(existingLike);
+            uow.Repository.DeleteLike(existingLike);
         }
 
-        if (await likesRepo.SaveChangesAsync()) return Ok();
+        if (await uow.CompleteAsync()) return Ok();
 
         return BadRequest("Appling like failed.");
     }
 
     [HttpGet("list")]
     public async Task<ActionResult<IEnumerable<int>>> GetCurrentUserLikeIds() =>
-       Ok(await likesRepo.GetCurrentUserLikeIds(User.GetUserIdClaim()));
+       Ok(await uow.Repository.GetCurrentUserLikeIds(User.GetUserIdClaim()));
 
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MemberDto>>> GetUserLikes([FromQuery] LikesParams likesParams)
     { 
         likesParams.UserId = User.GetUserIdClaim();
-        var users = await likesRepo.GetUserLikes(likesParams);
+        var users = await uow.Repository.GetUserLikes(likesParams);
         Response.AddPaginationHeader(users);
 
         return Ok(users);

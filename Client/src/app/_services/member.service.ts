@@ -45,7 +45,6 @@ export class MemberService {
     });
   }
 
-
   getMemberById(id: number) {
     return this.http.get<Member>(`${this.baseUrl}/users/${id}`);
   }
@@ -53,7 +52,10 @@ export class MemberService {
   getMemberByUsername(username: string) {
     // const member = this.members().find((m) => m.username === username);
     // if (member !== undefined) return of(member);
-
+    console.log(this.memberCache.values())
+    for(const m of [...this.memberCache.values()]){
+      console.log(m)
+    }
     const member:Member = [...this.memberCache.values()].reduce(
       (arr,elem) => arr.concat(elem.body),
       []
@@ -67,8 +69,6 @@ export class MemberService {
     // console.table(member2);
     // console.log('----------------------------------------------------');
     // console.log(this.memberCache.values());
-
-
     return this.http.get<Member>(`${this.baseUrl}/users/${username}`);
   }
 
@@ -107,7 +107,6 @@ deletePhoto(photo:Photo){
     // })
   );
 }
-
   // getHttpRequestHeaders() {
   //   return {
   //     headers: new HttpHeaders({
